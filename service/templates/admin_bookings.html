@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Bookings — OTO DriveCare Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root{--bg:#060d1a;--sidebar:#0b1829;--card:rgba(255,255,255,0.05);--gold:#ffcc00;--gold-dim:rgba(255,204,0,0.1);--text:#f0f4f8;--muted:#6a80a0;--border:rgba(255,255,255,0.08);--sw:230px;}
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{background:var(--bg);color:var(--text);font-family:'Segoe UI',sans-serif;display:flex;min-height:100vh;}
+        .sidebar{width:var(--sw);background:var(--sidebar);border-right:1px solid var(--border);padding:28px 18px;position:fixed;height:100vh;overflow-y:auto;}
+        .sidebar .logo{color:var(--gold);font-size:1.1rem;font-weight:800;margin-bottom:32px;}
+        .sidebar nav a{display:flex;align-items:center;gap:10px;color:#9ab;text-decoration:none;padding:10px 13px;border-radius:9px;margin-bottom:4px;font-size:0.87rem;transition:0.2s;}
+        .sidebar nav a:hover,.sidebar nav a.active{background:var(--gold-dim);color:var(--gold);}
+        .sidebar nav .divider{border-top:1px solid var(--border);margin:14px 0;}
+        .main{margin-left:var(--sw);flex:1;padding:28px 30px 60px;}
+        .toprow{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:12px;}
+        .toprow h1{font-size:1.4rem;font-weight:800;} .toprow h1 span{color:var(--gold);}
+        .filter-bar{display:flex;gap:8px;flex-wrap:wrap;}
+        .filter-btn{padding:7px 16px;border-radius:8px;text-decoration:none;font-size:0.82rem;font-weight:600;border:1px solid var(--border);color:var(--muted);background:var(--card);transition:0.2s;}
+        .filter-btn:hover,.filter-btn.active{background:var(--gold-dim);border-color:rgba(255,204,0,0.4);color:var(--gold);}
+        .panel{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+        table{width:100%;border-collapse:collapse;font-size:0.84rem;}
+        th{background:rgba(255,204,0,0.08);color:var(--gold);font-weight:600;padding:11px 14px;text-align:left;}
+        td{padding:11px 14px;border-top:1px solid var(--border);color:#ccc;vertical-align:middle;}
+        tr:hover td{background:rgba(255,255,255,0.02);}
+        .badge-s{padding:3px 9px;border-radius:20px;font-size:0.72rem;font-weight:600;}
+        .bp{background:rgba(255,204,0,0.15);color:#ffcc00;} .ba{background:rgba(116,192,252,0.15);color:#74c0fc;} .bi{background:rgba(255,140,0,0.15);color:#ff8c00;} .bc{background:rgba(81,207,102,0.15);color:#51cf66;} .br{background:rgba(255,107,107,0.15);color:#ff6b6b;} .bx{background:rgba(150,150,150,0.12);color:#888;}
+        select.status-sel{background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);padding:4px 8px;border-radius:7px;font-size:0.78rem;outline:none;cursor:pointer;}
+        select.status-sel option{background:#1a2a3a;}
+        .btn-upd{background:var(--gold-dim);border:1px solid rgba(255,204,0,0.3);color:var(--gold);padding:4px 12px;border-radius:7px;font-size:0.78rem;font-weight:600;cursor:pointer;transition:0.2s;}
+        .btn-upd:hover{background:rgba(255,204,0,0.25);}
+        .empty{text-align:center;padding:50px;color:var(--muted);}
+        .alert-ok{background:rgba(81,207,102,0.1);border:1px solid #51cf66;color:#51cf66;padding:9px 14px;border-radius:9px;margin-bottom:16px;font-size:0.85rem;}
+        .alert-err{background:rgba(255,107,107,0.1);border:1px solid #ff6b6b;color:#ff6b6b;padding:9px 14px;border-radius:9px;margin-bottom:16px;font-size:0.85rem;}
+        .inline-form{display:inline-flex;gap:6px;align-items:center;}
+    </style>
+</head>
+<body>
+<div class="sidebar">
+    <div class="logo">🚗 OTO DriveCare</div>
+    <nav>
+        <a href="/admin-dashboard/">📊 Dashboard</a>
+        <a href="/admin-bookings/" class="active">📋 Bookings</a>
+        <a href="/admin-payments/">💳 Payments</a>
+        <a href="/admin-services/">⚙️ Services</a>
+        <a href="/admin-workshops/">📍 Workshops</a>
+        <a href="/admin-users/">👥 Users</a>
+        <div class="divider"></div>
+        <a href="/admin/">🗄️ Django Admin</a>
+        <a href="/">🏠 Home Site</a>
+        <a href="/logout/" style="color:#ff6b6b;">🚪 Logout</a>
+    </nav>
+</div>
+<div class="main">
+    {% if messages %}
+    {% for msg in messages %}
+    <div class="{% if msg.tags == 'error' %}alert-err{% else %}alert-ok{% endif %}">{{ msg }}</div>
+    {% endfor %}
+    {% endif %}
+
+    <div class="toprow">
+        <h1>📋 Manage <span>Bookings</span></h1>
+        <div class="filter-bar">
+            <a href="/admin-bookings/" class="filter-btn {% if not status_filter %}active{% endif %}">All</a>
+            <a href="/admin-bookings/?status=Pending" class="filter-btn {% if status_filter == 'Pending' %}active{% endif %}">Pending</a>
+            <a href="/admin-bookings/?status=Approved" class="filter-btn {% if status_filter == 'Approved' %}active{% endif %}">Approved</a>
+            <a href="/admin-bookings/?status=In+Progress" class="filter-btn {% if status_filter == 'In Progress' %}active{% endif %}">In Progress</a>
+            <a href="/admin-bookings/?status=Completed" class="filter-btn {% if status_filter == 'Completed' %}active{% endif %}">Completed</a>
+            <a href="/admin-bookings/?status=Rejected" class="filter-btn {% if status_filter == 'Rejected' %}active{% endif %}">Rejected</a>
+        </div>
+    </div>
+
+    <div class="panel">
+        {% if bookings %}
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Customer</th>
+                    <th>Service</th>
+                    <th>Workshop</th>
+                    <th>Car</th>
+                    <th>Appointment</th>
+                    <th>Payment</th>
+                    <th>Status</th>
+                    <th>Update</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for b in bookings %}
+            <tr>
+                <td style="color:var(--muted)">{{ forloop.counter }}</td>
+                <td>
+                    <strong>{{ b.customer.username }}</strong><br>
+                    <small style="color:var(--muted)">{{ b.customer.email }}</small>
+                </td>
+                <td>{{ b.service.icon }} {{ b.service.name }}</td>
+                <td>{{ b.workshop.name }}</td>
+                <td>{{ b.car_model }}<br><small style="color:var(--muted)">{{ b.car_number }}</small></td>
+                <td>{{ b.appointment_date|date:"d M Y" }}<br><small style="color:var(--muted)">{{ b.appointment_time|time:"h:i A" }}</small></td>
+                <td>
+                    {% if b.payment_status == 'Paid' %}
+                        <span class="badge-s bc" style="margin-bottom:4px; display:inline-block;">Paid</span><br>
+                        <small style="color:var(--muted)">ID: {{ b.transaction_id|default:"N/A" }}</small>
+                    {% else %}
+                        <span class="badge-s bx">Pending</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if b.status == 'Pending' %}<span class="badge-s bp">Pending</span>
+                    {% elif b.status == 'Approved' %}<span class="badge-s ba">Approved</span>
+                    {% elif b.status == 'In Progress' %}<span class="badge-s bi">In Progress</span>
+                    {% elif b.status == 'Completed' %}<span class="badge-s bc">Completed</span>
+                    {% elif b.status == 'Rejected' %}<span class="badge-s br">Rejected</span>
+                    {% else %}<span class="badge-s bx">Cancelled</span>{% endif %}
+                </td>
+                <td>
+                    <form method="POST" action="/admin-update-booking/{{ b.id }}/" class="inline-form">
+                        {% csrf_token %}
+                        <select name="status" class="status-sel">
+                            {% for val, label in status_choices %}
+                            <option value="{{ val }}" {% if b.status == val %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="btn-upd">Save</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty">No bookings found{% if status_filter %} for status "{{ status_filter }}"{% endif %}.</div>
+        {% endif %}
+    </div>
+</div>
+</body>
+</html>

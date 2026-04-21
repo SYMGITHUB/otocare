@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal | Oto DriveCare</title>
+    <style>
+        /* --- General Styles --- */
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            /* Modern Gradient Background */
+            background: linear-gradient(135deg, #2b2d42 0%, #1a1c2c 100%);
+            color: #fff;
+        }
+
+        /* --- Login Card Container --- */
+        .login-container {
+            position: relative;
+            max-width: 400px;
+            width: 90%;
+            z-index: 1;
+        }
+
+        /* --- Stylized Card --- */
+        .login-card {
+            background: rgba(255, 255, 255, 0.05); /* Semi-transparent white */
+            backdrop-filter: blur(10px); /* Frosted glass effect */
+            padding: 50px 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle white border */
+            text-align: center;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        /* --- Logo/Brand Area --- */
+        .brand-logo {
+            font-size: 32px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+        .brand-logo span {
+            color: #d90429; /* Primary Red Color */
+        }
+        .subtitle {
+            font-size: 14px;
+            color: #b0b0b0;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* --- Input Fields --- */
+        .input-group {
+            position: relative;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        /* CSS for icons (Optional: Use FontAwesome for better icons) */
+        .input-group::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            opacity: 0.5;
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+        /* E.g., for email icon: background-image: url('email.svg'); */
+
+        .input-group input {
+            width: 100%;
+            padding: 15px 15px 15px 45px; /* Extra padding on the left for icon */
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid transparent;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 16px;
+            box-sizing: border-box; /* Crucial for padding */
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #d90429;
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 10px rgba(217, 4, 41, 0.3);
+        }
+
+        .input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Placeholder icon replacement text */
+        .input-icon-placeholder {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+            opacity: 0.5;
+            color: #fff;
+        }
+
+        /* --- Submit Button --- */
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: #d90429; /* Primary Red */
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 5px 15px rgba(217, 4, 41, 0.4);
+        }
+
+        .login-btn:hover {
+            background: #b30322;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(217, 4, 41, 0.6);
+        }
+
+        .login-btn:active {
+            transform: translateY(1px);
+        }
+
+        /* --- Error Message Styles --- */
+        .error-msg {
+            background-color: rgba(217, 4, 41, 0.1);
+            color: #ff4d4d;
+            border: 1px solid rgba(217, 4, 41, 0.3);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* --- Decorative Background Shape (Optional) --- */
+        .bg-shape {
+            position: absolute;
+            top: -100px;
+            left: -100px;
+            width: 300px;
+            height: 300px;
+            background: #d90429;
+            opacity: 0.1;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+        }
+
+        /* --- Responsive Adjustments --- */
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 40px 30px;
+            }
+            .brand-logo {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <div class="bg-shape"></div>
+        
+        <div class="login-card">
+            <div class="brand-logo">Oto <span>DriveCare</span></div>
+            <div class="subtitle">Admin Portal</div>
+
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="input-group">
+                    <span class="input-icon-placeholder">✉️</span> <input type="email" name="email" placeholder="Admin Email" required>
+                </div>
+                
+                <div class="input-group">
+                    <span class="input-icon-placeholder">🔒</span> <input type="password" name="password" placeholder="Password" required>
+                </div>
+                
+                <button type="submit" class="login-btn">Login Now</button>
+                
+                {% if error %}
+                    <div class="error-msg">
+                        ⚠️ {{ error }}
+                    </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>

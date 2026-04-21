@@ -1,0 +1,1 @@
+web: gunicorn OTOCARE_PROJECT.wsgi:application

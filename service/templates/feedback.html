@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leave a Review — OTO DriveCare</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root { --bg:#0b1829; --card:rgba(255,255,255,0.06); --gold:#ffcc00; --gold-dim:rgba(255,204,0,0.12); --text:#f0f4f8; --muted:#7a90a8; --border:rgba(255,255,255,0.09); }
+        * { box-sizing:border-box; margin:0; padding:0; }
+        body { background:var(--bg); color:var(--text); font-family:'Segoe UI',sans-serif; display:flex; flex-direction:column; min-height:100vh; }
+        .topbar { background:rgba(0,0,0,0.5); backdrop-filter:blur(10px); padding:14px 32px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border); }
+        .topbar .brand { color:var(--gold); font-size:1.2rem; font-weight:800; text-decoration:none; }
+        .main { max-width:560px; margin:40px auto; padding:0 24px 60px; width:100%; }
+        .card-box { background:var(--card); border:1px solid var(--border); border-radius:18px; padding:36px 32px; }
+        .card-box h1 { color:var(--gold); font-size:1.4rem; font-weight:800; margin-bottom:4px; }
+        .card-box p.sub { color:var(--muted); font-size:0.88rem; margin-bottom:22px; }
+        .booking-info { background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:12px; padding:14px 16px; margin-bottom:24px; font-size:0.86rem; }
+        .booking-info strong { color:var(--gold); }
+        .booking-info p { color:#ccc; margin:3px 0; }
+        .form-group { margin-bottom:18px; }
+        label { display:block; font-size:0.82rem; color:var(--muted); margin-bottom:8px; font-weight:600; }
+        textarea { width:100%; background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--text); padding:11px 14px; border-radius:10px; font-size:0.9rem; outline:none; resize:vertical; min-height:100px; transition:border-color 0.2s; }
+        textarea:focus { border-color:rgba(255,204,0,0.5); }
+        textarea::placeholder { color:var(--muted); }
+        .star-row { display:flex; gap:8px; margin-bottom:4px; }
+        .star-btn { font-size:1.8rem; cursor:pointer; background:none; border:none; padding:0; color:#444; transition:color 0.15s; line-height:1; }
+        .star-btn.active, .star-btn:hover { color:var(--gold); }
+        .star-hint { color:var(--muted); font-size:0.78rem; min-height:18px; }
+
+        .btn-submit { width:100%; background:var(--gold); color:#0b1829; font-weight:800; font-size:1rem; padding:13px; border:none; border-radius:11px; cursor:pointer; margin-top:6px; transition:0.2s; }
+        .btn-submit:hover { background:#e6b800; }
+        .alert-err { background:rgba(255,107,107,0.12); border:1px solid #ff6b6b; color:#ff6b6b; padding:10px 16px; border-radius:10px; font-size:0.87rem; margin-bottom:18px; }
+        .back-link { display:block; text-align:center; margin-top:14px; color:var(--muted); font-size:0.84rem; text-decoration:none; }
+        .back-link:hover { color:var(--gold); }
+        .star-labels { display:flex; gap:8px; font-size:0.72rem; color:var(--muted); padding-left:2px; }
+        .star-labels span { width:1.8rem; text-align:center; }
+    </style>
+</head>
+<body>
+<div class="topbar">
+    <a href="/" class="brand">🚗 OTO DriveCare</a>
+    <a href="/booking-history/" style="color:var(--muted);font-size:0.85rem;text-decoration:none;">← Back to My Bookings</a>
+</div>
+
+<div class="main">
+    <div class="card-box">
+        <h1>⭐ Leave a Review</h1>
+        <p class="sub">Share your experience with this service.</p>
+
+        {% if error %}
+        <div class="alert-err">⚠️ {{ error }}</div>
+        {% endif %}
+
+        <div class="booking-info">
+            <strong>{{ booking.service.icon }} {{ booking.service.name }}</strong>
+            <p>📍 {{ booking.workshop.name }}</p>
+            <p>🚗 {{ booking.car_model }} ({{ booking.car_number }})</p>
+            <p>📅 {{ booking.appointment_date|date:"d M Y" }} at {{ booking.appointment_time|time:"h:i A" }}</p>
+        </div>
+
+        <form method="POST" id="review-form">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label>Your Rating *</label>
+                <div class="star-row" id="stars">
+                    <button type="button" class="star-btn" data-val="1">★</button>
+                    <button type="button" class="star-btn" data-val="2">★</button>
+                    <button type="button" class="star-btn" data-val="3">★</button>
+                    <button type="button" class="star-btn" data-val="4">★</button>
+                    <button type="button" class="star-btn" data-val="5">★</button>
+                </div>
+                <div class="star-hint" id="star-hint">Click a star to rate</div>
+                <input type="hidden" name="rating" id="rating-val" value="">
+            </div>
+
+            <div class="form-group">
+                <label>Your Comment *</label>
+                <textarea name="comment" placeholder="Tell us about your experience..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit">Submit Review ⭐</button>
+        </form>
+        <a href="/booking-history/" class="back-link">← Cancel and go back</a>
+    </div>
+</div>
+
+<script>
+const stars = document.querySelectorAll('.star-btn');
+const ratingVal = document.getElementById('rating-val');
+const hint = document.getElementById('star-hint');
+const labels = ['Terrible','Bad','Okay','Good','Excellent!'];
+
+stars.forEach(star => {
+    star.addEventListener('click', () => {
+        const val = parseInt(star.dataset.val);
+        ratingVal.value = val;
+        stars.forEach((s, i) => s.classList.toggle('active', i < val));
+        hint.textContent = labels[val - 1];
+    });
+});
+
+document.getElementById('review-form').addEventListener('submit', e => {
+    if (!ratingVal.value) {
+        e.preventDefault();
+        hint.textContent = '⚠️ Please select a rating!';
+        hint.style.color = '#ff6b6b';
+    }
+});
+</script>
+</body>
+</html>

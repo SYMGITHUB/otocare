@@ -1,0 +1,862 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTO DriveCare | Premium Vehicle Services</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <style>
+        :root {
+            --bg-dark: #0a0f16;
+            --surface: rgba(26, 32, 44, 0.6);
+            --surface-hover: rgba(45, 55, 72, 0.8);
+            --primary: #f59e0b;
+            /* Amber/Gold */
+            --primary-glow: rgba(245, 158, 11, 0.4);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --heading-font: 'Outfit', sans-serif;
+            --body-font: 'Inter', sans-serif;
+            --hero-grad: linear-gradient(to right, #ffffff, #94a3b8);
+            --navbar-bg: rgba(10, 15, 22, 0.7);
+            --navbar-scrolled: rgba(10, 15, 22, 0.95);
+            --features-bg: rgba(0, 0, 0, 0.3);
+            --footer-bg: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+            --hero-opacity: 0.3;
+            --glow-1: rgba(245, 158, 11, 0.08);
+            --glow-2: rgba(59, 130, 246, 0.05);
+            --btn-sec-border: var(--glass-border);
+            --btn-sec-hover: rgba(255, 255, 255, 0.05);
+        }
+
+        [data-theme="light"] {
+            --bg-dark: #f8fafc;
+            /* Very light slate */
+            --surface: rgba(255, 255, 255, 0.8);
+            --surface-hover: rgba(255, 255, 255, 1);
+            --primary: #eab308;
+            /* Slightly darker gold for light mode */
+            --primary-glow: rgba(234, 179, 8, 0.3);
+            --text-main: #0f172a;
+            /* Dark slate */
+            --text-muted: #64748b;
+            /* Medium slate */
+            --glass-border: rgba(0, 0, 0, 0.1);
+            --hero-grad: linear-gradient(to right, #0f172a, #475569);
+            --navbar-bg: rgba(255, 255, 255, 0.7);
+            --navbar-scrolled: rgba(255, 255, 255, 0.95);
+            --features-bg: rgba(255, 255, 255, 0.7);
+            --footer-bg: linear-gradient(to top, rgba(226, 232, 240, 0.9), transparent);
+            --hero-opacity: 0.15;
+            --glow-1: rgba(245, 158, 11, 0.05);
+            --glow-2: rgba(59, 130, 246, 0.03);
+            --btn-sec-border: rgba(0, 0, 0, 0.2);
+            --btn-sec-hover: rgba(0, 0, 0, 0.05);
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--body-font);
+            margin: 0;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Ambient Glow Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -20vh;
+            left: -20vw;
+            width: 60vw;
+            height: 60vw;
+            background: radial-gradient(circle, var(--glow-1) 0%, transparent 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -20vh;
+            right: -20vw;
+            width: 50vw;
+            height: 50vw;
+            background: radial-gradient(circle, var(--glow-2) 0%, transparent 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* --------- NAVBAR --------- */
+        .navbar-custom {
+            background: var(--navbar-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 1rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand {
+            font-family: var(--heading-font);
+            font-weight: 800;
+            font-size: 1.6rem;
+            color: var(--text-main) !important;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar-brand span {
+            color: var(--primary);
+        }
+
+        .nav-link {
+            font-weight: 500;
+            color: var(--text-main) !important;
+            margin: 0 10px;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--primary) !important;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 50%;
+            background-color: var(--primary);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .btn-book-nav {
+            background-color: var(--primary);
+            color: var(--bg-dark) !important;
+            border-radius: 50px;
+            padding: 8px 24px;
+            font-weight: 600;
+            margin-left: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px var(--primary-glow);
+            text-decoration: none;
+        }
+
+        .btn-book-nav:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px var(--primary-glow);
+            color: #000 !important;
+        }
+
+        .btn-sos {
+            background: rgba(220, 38, 38, 0.1);
+            color: #ef4444 !important;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 50px;
+            padding: 8px 20px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-sos:hover {
+            background: #ef4444;
+            color: #fff !important;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+        }
+
+        /* --------- HERO --------- */
+        .hero {
+            position: relative;
+            padding: 140px 0 100px 0;
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('{% static "images/auto_care_service.png" %}');
+            background-size: cover;
+            background-position: center;
+            opacity: var(--hero-opacity);
+            z-index: -1;
+            mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 50%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 50%, transparent 100%);
+        }
+
+        .hero-title {
+            font-family: var(--heading-font);
+            font-size: 4.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: var(--hero-grad);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: fadeUp 1s ease-out;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+            max-width: 600px;
+            animation: fadeUp 1s ease-out 0.2s backwards;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+            animation: fadeUp 1s ease-out 0.4s backwards;
+        }
+
+        .btn-primary-custom {
+            background-color: var(--primary);
+            color: var(--bg-dark);
+            padding: 14px 36px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px var(--primary-glow);
+            border: none;
+            display: inline-block;
+        }
+
+        .btn-primary-custom:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(245, 158, 11, 0.6);
+            color: #000;
+        }
+
+        .btn-secondary-custom {
+            background-color: transparent;
+            color: var(--text-main);
+            padding: 14px 36px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 1px solid var(--btn-sec-border);
+            backdrop-filter: blur(10px);
+            display: inline-block;
+        }
+
+        .btn-secondary-custom:hover {
+            background-color: var(--btn-sec-hover);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* --------- SERVICES --------- */
+        .section-title {
+            font-family: var(--heading-font);
+            font-size: 2.5rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .section-title span {
+            color: var(--primary);
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 4rem;
+            font-size: 1.1rem;
+        }
+
+        .service-card {
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px;
+            height: 100%;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(245, 158, 11, 0.3);
+            background: var(--surface-hover);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3), 0 0 20px rgba(245, 158, 11, 0.05);
+        }
+
+        .service-card:hover::before {
+            transform: translateX(100%);
+        }
+
+        .service-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary), #fbbf24);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .service-title {
+            font-family: var(--heading-font);
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .service-desc {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        .service-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .service-price {
+            font-weight: 700;
+            color: var(--text-main);
+            font-size: 1.1rem;
+        }
+
+        .service-duration {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* --------- STATS / FEATURES --------- */
+        .features-section {
+            padding: 80px 0;
+            background: var(--features-bg);
+            border-top: 1px solid var(--glass-border);
+            border-bottom: 1px solid var(--glass-border);
+            margin: 60px 0;
+        }
+
+        .feature-item {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .feature-item i {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .feature-item h4 {
+            font-family: var(--heading-font);
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .feature-item p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* --------- FOOTER --------- */
+        .footer {
+            padding: 60px 0 30px 0;
+            background: var(--footer-bg);
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .footer-brand {
+            font-family: var(--heading-font);
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        .footer-brand span {
+            color: var(--primary);
+        }
+
+        .footer h5 {
+            font-family: var(--heading-font);
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-main);
+        }
+
+        .footer p,
+        .footer a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .footer a:hover {
+            color: var(--primary);
+            padding-left: 5px;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .footer-social a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .footer-social a:hover {
+            background: var(--primary);
+            color: var(--bg-dark);
+            transform: translateY(-3px);
+            padding-left: 0;
+            /* Override */
+        }
+
+        .footer-divider {
+            border-color: rgba(255, 255, 255, 0.1);
+            margin: 40px 0 20px 0;
+        }
+
+        /* Animations */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 3rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+            }
+
+            .hero-buttons a {
+                text-align: center;
+            }
+
+            .navbar-collapse {
+                background: var(--navbar-scrolled);
+                padding: 20px;
+                border-radius: 15px;
+                margin-top: 10px;
+                border: 1px solid var(--glass-border);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="">
+                <i class="bi bi-hexagon-fill" style="color: var(--primary); font-size: 1.2rem;"></i>
+                OTO<span>Drive</span>Care
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" style="border:none;">
+                <i class="bi bi-list" style="font-size: 1.8rem; color: #fff;"></i>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'services' %}">Services</a>
+                    </li>
+
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="{% if user.is_staff %}{% url 'admin_dashboard' %}{% else %}{% url 'customer_dashboard' %}{% endif %}">Dashboard</a>
+                    </li>
+                    <li class="nav-item ms-lg-2 mt-3 mt-lg-0">
+                        <a href="{% url 'logout' %}" class="nav-link text-danger">Logout</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'register' %}">Register</a>
+                    </li>
+                    {% endif %}
+
+                    <li class="nav-item ms-lg-3 mt-3 mt-lg-0">
+                        <button id="theme-toggle" class="btn btn-outline-secondary rounded-circle theme-toggler-btn"
+                            style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-color: var(--glass-border); color: var(--text-main); transition: all 0.3s ease;"
+                            title="Change Theme">
+                            <i class="bi bi-sun-fill" id="theme-icon"></i>
+                        </button>
+                    </li>
+
+                    <li class="nav-item ms-lg-3 mt-3 mt-lg-0 d-flex gap-2">
+                        <a href="tel:+918849598629" class="btn-sos" title="Emergency Help">
+                            <i class="bi bi-telephone-fill"></i> SOS
+                        </a>
+                        <a href="{% url 'book_service' %}" class="btn-book-nav">Book Now</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-xl-7">
+                    <h1 class="hero-title">Elevate Your<br>Driving Experience</h1>
+                    <p class="hero-subtitle">Experience premium vehicle care tailored for performance. Professional
+                        detailing, maintenance, and repair services that keep your car running like new.</p>
+                    <div class="hero-buttons">
+                        <a href="{% url 'book_service' %}" class="btn-primary-custom">Book Service <i
+                                class="bi bi-arrow-right ms-2"></i></a>
+                        <a href="#services" class="btn-secondary-custom">Explore Services</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES SECTION -->
+    <section class="features-section">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="feature-item">
+                        <i class="bi bi-shield-check"></i>
+                        <h4>Certified Experts</h4>
+                        <p>Our mechanics are highly trained professionals utilizing state-of-the-art diagnostic
+                            equipment.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-item">
+                        <i class="bi bi-clock-history"></i>
+                        <h4>Fast Turnaround</h4>
+                        <p>We value your time. Our efficient processes ensure your vehicle is back on the road swiftly.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-item">
+                        <i class="bi bi-star-fill"></i>
+                        <h4>Premium Quality</h4>
+                        <p>We use only top-tier parts and premium fluids to guarantee the longevity of your vehicle.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- POPULAR SERVICES SECTION -->
+    <section id="services" class="container py-5 my-5">
+        <h2 class="section-title">Our Premium <span>Services</span></h2>
+        <p class="section-subtitle">We offer a complete range of services to keep your vehicle in prime condition</p>
+
+        <div class="row g-4">
+            {% if services %}
+            {% for service in services %}
+            <div class="col-md-6 col-lg-4">
+                <div class="service-card">
+                    <div class="service-icon">
+                        {% if service.icon %}
+                        {{ service.icon }}
+                        {% else %}
+                        <i class="bi bi-tools"></i>
+                        {% endif %}
+                    </div>
+                    <h3 class="service-title">{{ service.name }}</h3>
+                    <p class="service-desc">{{ service.description|truncatewords:15 }}</p>
+
+                    <div class="service-meta">
+                        <div class="service-price">₹{{ service.price|floatformat:0 }}</div>
+                        <div class="service-duration"><i class="bi bi-stopwatch"></i> {{ service.duration }}</div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <!-- Fallback if no services in DB -->
+            <div class="col-md-4">
+                <div class="service-card">
+                    <div class="service-icon">🚗</div>
+                    <h3 class="service-title">Car Service</h3>
+                    <p class="service-desc">Premium exterior and interior washing and cleaning for your car.</p>
+                    <div class="service-meta">
+                        <div class="service-price">₹1200</div>
+                        <div class="service-duration">2 hrs</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="service-card">
+                    <div class="service-icon">🛢️</div>
+                    <h3 class="service-title">Oil Change</h3>
+                    <p class="service-desc">Engine care & smooth performance with synthetic oil.</p>
+                    <div class="service-meta">
+                        <div class="service-price">₹800</div>
+                        <div class="service-duration">1 hr</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="service-card">
+                    <div class="service-icon">🔧</div>
+                    <h3 class="service-title">Full Service</h3>
+                    <p class="service-desc">Complete multi-point inspection & preventive maintenance.</p>
+                    <div class="service-meta">
+                        <div class="service-price">₹3500</div>
+                        <div class="service-duration">5 hrs</div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="text-center mt-5">
+            <a href="{% url 'services' %}" class="btn-secondary-custom">View All Services</a>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row gy-4">
+                <div class="col-lg-4 col-md-6 text-center text-md-start">
+                    <div class="footer-brand">
+                        <i class="bi bi-hexagon-fill" style="color: var(--primary); font-size: 1.2rem;"></i>
+                        OTO<span>Drive</span>Care
+                    </div>
+                    <p>Smart, reliable, and premium car service at your fingertips. Your vehicle deserves the absolute
+                        best care.</p>
+                    <div class="footer-social justify-content-center justify-content-md-start">
+                        <a href="#"><i class="bi bi-facebook"></i></a>
+                        <a href="#"><i class="bi bi-twitter-x"></i></a>
+                        <a href="#"><i class="bi bi-instagram"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 offset-lg-1 text-center text-md-start">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled d-flex flex-column gap-2">
+                        <li><a href="{% url 'home' %}">Home</a></li>
+                        <li><a href="{% url 'services' %}">Our Services</a></li>
+                        <li><a href="{% url 'book_service' %}">Book Appointment</a></li>
+                        <li><a href="{% url 'emergency' %}">Emergency Setup</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6 text-center text-md-start">
+                    <h5>Contact Us</h5>
+                    <ul class="list-unstyled d-flex flex-column gap-3 mt-3">
+                        <li class="d-flex align-items-center gap-3 justify-content-center justify-content-md-start">
+                            <div
+                                style="background: rgba(245, 158, 11, 0.1); min-width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(245, 158, 11, 0.2);">
+                                <i class="bi bi-telephone-fill" style="color: var(--primary); font-size: 1.1rem;"></i>
+                            </div>
+                            <div>
+                                <span class="d-block"
+                                    style="color: #94a3b8; font-size: 0.75rem; font-weight: 500; letter-spacing: 1px; text-transform: uppercase;">Emergency
+                                    Help</span>
+                                <span style="font-size: 1.05rem; font-weight: 600; color: var(--text-main);">+91
+                                    8849598629</span>
+                            </div>
+                        </li>
+                        <li class="d-flex align-items-center gap-3 justify-content-center justify-content-md-start">
+                            <div
+                                style="background: rgba(245, 158, 11, 0.1); min-width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(245, 158, 11, 0.2);">
+                                <i class="bi bi-envelope-fill" style="color: var(--primary); font-size: 1.1rem;"></i>
+                            </div>
+                            <div>
+                                <span class="d-block"
+                                    style="color: #94a3b8; font-size: 0.75rem; font-weight: 500; letter-spacing: 1px; text-transform: uppercase;">Email
+                                    Support</span>
+                                <span
+                                    style="font-size: 1.05rem; font-weight: 600; color: var(--text-main);">support@otodrivecare.com</span>
+                            </div>
+                        </li>
+                        <li class="d-flex align-items-center gap-3 justify-content-center justify-content-md-start">
+                            <div
+                                style="background: rgba(245, 158, 11, 0.1); min-width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(245, 158, 11, 0.2);">
+                                <i class="bi bi-geo-alt-fill" style="color: var(--primary); font-size: 1.1rem;"></i>
+                            </div>
+                            <div>
+                                <span class="d-block"
+                                    style="color: #94a3b8; font-size: 0.75rem; font-weight: 500; letter-spacing: 1px; text-transform: uppercase;">Workshop
+                                    Location</span>
+                                <span
+                                    style="font-size: 1.05rem; font-weight: 600; color: var(--text-main);">Ahmedabad</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <hr class="footer-divider">
+
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                    <p class="mb-0" style="color: var(--text-main); font-size: 0.9rem;">&copy; 2026 OTO DriveCare. All
+                        rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <p class="mb-0" style="color: var(--text-main); font-size: 0.9rem;">Designed for precision.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JS to make navbar shrink on scroll -->
+    <script>
+        window.addEventListener('scroll', function () {
+            const navbar = document.querySelector('.navbar-custom');
+            const root = document.documentElement;
+            // Get computed style using custom properties so it correctly matches theme
+            const scrolledBg = getComputedStyle(root).getPropertyValue('--navbar-scrolled').trim();
+            const defaultBg = getComputedStyle(root).getPropertyValue('--navbar-bg').trim();
+
+            if (window.scrollY > 50) {
+                navbar.style.padding = '0.5rem 0';
+                navbar.style.background = scrolledBg;
+            } else {
+                navbar.style.padding = '1rem 0';
+                navbar.style.background = defaultBg;
+            }
+        });
+
+        // Theme Toggle Logic
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const rootElement = document.documentElement;
+
+        // Initial setup check
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            rootElement.setAttribute('data-theme', savedTheme);
+            updateIcon(savedTheme);
+        } else {
+            rootElement.setAttribute('data-theme', 'dark'); // Default
+            updateIcon('dark');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = rootElement.getAttribute('data-theme') || 'dark';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            rootElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateIcon(newTheme);
+
+            // Force navbar background update if already scrolled
+            if (window.scrollY > 50) {
+                document.querySelector('.navbar-custom').style.background = getComputedStyle(rootElement).getPropertyValue('--navbar-scrolled').trim();
+            } else {
+                document.querySelector('.navbar-custom').style.background = getComputedStyle(rootElement).getPropertyValue('--navbar-bg').trim();
+            }
+        });
+
+        function updateIcon(theme) {
+            if (theme === 'light') {
+                themeIcon.className = 'bi bi-moon-stars-fill';
+            } else {
+                themeIcon.className = 'bi bi-sun-fill';
+            }
+        }
+    </script>
+</body>
+
+</html>

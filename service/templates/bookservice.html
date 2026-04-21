@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book a Service — OTO DriveCare</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root { --bg:#0b1829; --card:rgba(255,255,255,0.06); --gold:#ffcc00; --gold-dim:rgba(255,204,0,0.12); --text:#f0f4f8; --muted:#7a90a8; --border:rgba(255,255,255,0.09); }
+        * { box-sizing:border-box; margin:0; padding:0; }
+        body { background:var(--bg); color:var(--text); font-family:'Segoe UI',sans-serif; min-height:100vh; }
+        .topbar { background:rgba(0,0,0,0.5); backdrop-filter:blur(10px); padding:14px 32px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100; }
+        .topbar .brand { color:var(--gold); font-size:1.2rem; font-weight:800; text-decoration:none; }
+        .topbar nav a { color:#ccc; text-decoration:none; margin-left:22px; font-size:0.88rem; transition:color 0.2s; }
+        .topbar nav a:hover, .topbar nav a.active { color:var(--gold); }
+        .user-chip { background:var(--gold-dim); border:1px solid rgba(255,204,0,0.3); color:var(--gold); padding:5px 14px; border-radius:20px; font-size:0.82rem; font-weight:600; }
+        .main { max-width:680px; margin:40px auto; padding:0 24px 60px; }
+        .card-box { background:var(--card); border:1px solid var(--border); border-radius:18px; padding:36px 32px; }
+        .card-box h1 { color:var(--gold); font-size:1.5rem; font-weight:800; margin-bottom:4px; }
+        .card-box p.sub { color:var(--muted); font-size:0.88rem; margin-bottom:24px; }
+        .form-group { margin-bottom:18px; }
+        label { display:block; font-size:0.82rem; color:var(--muted); margin-bottom:6px; font-weight:600; letter-spacing:0.3px; }
+        input, select, textarea {
+            width:100%; background:rgba(255,255,255,0.05); border:1px solid var(--border);
+            color:var(--text); padding:11px 14px; border-radius:10px; font-size:0.9rem; outline:none;
+            transition:border-color 0.2s;
+        }
+        input:focus, select:focus, textarea:focus { border-color:rgba(255,204,0,0.5); }
+        input::placeholder, textarea::placeholder { color:var(--muted); }
+        select option { background:#1a2a3a; color:#fff; }
+        textarea { resize:vertical; min-height:80px; }
+        .row2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+        .btn-submit { width:100%; background:var(--gold); color:#0b1829; font-weight:800; font-size:1rem; padding:13px; border:none; border-radius:11px; cursor:pointer; transition:0.2s; margin-top:6px; }
+        .btn-submit:hover { background:#e6b800; }
+        .alert-err { background:rgba(255,107,107,0.12); border:1px solid #ff6b6b; color:#ff6b6b; padding:10px 16px; border-radius:10px; font-size:0.87rem; margin-bottom:18px; }
+        .alert-ok { background:rgba(81,207,102,0.12); border:1px solid #51cf66; color:#51cf66; padding:14px 18px; border-radius:10px; font-size:0.9rem; margin-bottom:18px; font-weight:600; }
+        .price-tag { float:right; background:var(--gold-dim); color:var(--gold); padding:2px 10px; border-radius:20px; font-size:0.78rem; font-weight:600; }
+    </style>
+</head>
+<body>
+<div class="topbar">
+    <a href="/" class="brand">🚗 OTO DriveCare</a>
+    <nav>
+        <a href="/dashboard/">Dashboard</a>
+        <a href="/services/">Services</a>
+        <a href="/book-service/" class="active">Book Service</a>
+        <a href="/booking-history/">My Bookings</a>
+    </nav>
+    <div>
+        <span class="user-chip">👤 {{ request.user.username }}</span>
+        &nbsp;<a href="/logout/" style="color:#ff6b6b;font-size:0.82rem;text-decoration:none;">Logout</a>
+    </div>
+</div>
+
+<div class="main">
+    <div class="card-box">
+        <h1>🗓️ Book a Service</h1>
+        <p class="sub">Fill in your details and we'll confirm your appointment.</p>
+
+        {% if success %}
+        <div class="alert-ok">
+            ✅ Your service has been booked successfully! We'll contact you to confirm.
+            <br><a href="/booking-history/" style="color:#51cf66;font-size:0.85rem;">View My Bookings →</a>
+        </div>
+        {% endif %}
+
+        {% if error %}
+        <div class="alert-err">⚠️ {{ error }}</div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label>Select Service *</label>
+                <select name="service_id" required id="service-select">
+                    <option value="">— Choose a service —</option>
+                    {% for s in services %}
+                    <option value="{{ s.id }}" data-price="{{ s.price }}" {% if preselected_service == s.id|stringformat:"s" %}selected{% endif %}>
+                        {{ s.icon }} {{ s.name }} — ₹{{ s.price }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Select Workshop *</label>
+                <select name="workshop_id" required>
+                    <option value="">— Choose a workshop —</option>
+                    {% for w in workshops %}
+                    <option value="{{ w.id }}">{{ w.name }} — {{ w.address|truncatechars:40 }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="row2">
+                <div class="form-group">
+                    <label>Car Model *</label>
+                    <input type="text" name="car_model" placeholder="e.g. Maruti Swift" required>
+                </div>
+                <div class="form-group">
+                    <label>Car Number *</label>
+                    <input type="text" name="car_number" placeholder="e.g. MH12AB1234" required>
+                </div>
+            </div>
+
+            <div class="row2">
+                <div class="form-group">
+                    <label>Appointment Date *</label>
+                    <input type="date" name="appointment_date" required id="appt-date">
+                </div>
+                <div class="form-group">
+                    <label>Appointment Time *</label>
+                    <select name="appointment_time" required>
+                        <option value="">— Select time —</option>
+                        <option value="09:00">9:00 AM</option>
+                        <option value="10:00">10:00 AM</option>
+                        <option value="11:00">11:00 AM</option>
+                        <option value="12:00">12:00 PM</option>
+                        <option value="13:00">1:00 PM</option>
+                        <option value="14:00">2:00 PM</option>
+                        <option value="15:00">3:00 PM</option>
+                        <option value="16:00">4:00 PM</option>
+                        <option value="17:00">5:00 PM</option>
+                        <option value="18:00">6:00 PM</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Additional Notes (Optional)</label>
+                <textarea name="notes" placeholder="Any specific issues or requests..."></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit">📅 Confirm Booking</button>
+        </form>
+    </div>
+</div>
+<script>
+    // Set min date to today
+    document.getElementById('appt-date').min = new Date().toISOString().split('T')[0];
+</script>
+</body>
+</html>

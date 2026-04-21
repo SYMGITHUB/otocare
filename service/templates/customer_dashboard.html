@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Dashboard — OTO DriveCare</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+
+        :root {
+            --bg: #030812;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-thick: rgba(255, 255, 255, 0.06);
+            --gold: #ffcc00;
+            --gold-glow: rgba(255, 204, 0, 0.4);
+            --text: #ffffff;
+            --muted: #8a9bb8;
+            --border: rgba(255, 255, 255, 0.08);
+            --success: #00ff88;
+            --danger: #ff4d4d;
+            --blue: #00d2ff;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(circle at 10% 10%, rgba(255, 204, 0, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 90%, rgba(0, 210, 255, 0.05) 0%, transparent 40%);
+            color: var(--text);
+            font-family: 'Outfit', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Navbar */
+        .topbar {
+            background: rgba(3, 8, 18, 0.8);
+            backdrop-filter: blur(15px);
+            padding: 18px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .topbar .brand {
+            color: var(--gold);
+            font-size: 1.4rem;
+            font-weight: 800;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        .topbar nav { display: flex; gap: 30px; }
+        .topbar nav a {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .topbar nav a:hover, .topbar nav a.active {
+            color: var(--gold);
+            text-shadow: 0 0 10px var(--gold-glow);
+        }
+
+        .user-chip {
+            background: rgba(255, 204, 0, 0.1);
+            border: 1px solid rgba(255, 204, 0, 0.2);
+            padding: 6px 16px;
+            border-radius: 100px;
+            color: var(--gold);
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Main Container */
+        .main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 24px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .welcome-header { margin-bottom: 40px; }
+        .welcome-header h1 { font-size: 2.2rem; font-weight: 800; }
+        .welcome-header h1 span { color: var(--gold); }
+        .welcome-header p { color: var(--muted); margin-top: 8px; font-size: 1rem; }
+
+        /* Stat Grid */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 50px;
+        }
+
+        .stat-card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px);
+            background: var(--glass-thick);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .stat-card .num { font-size: 3rem; font-weight: 800; line-height: 1; margin-bottom: 10px; }
+        .stat-card .lbl { color: var(--muted); font-size: 0.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+
+        .stat-card.blue .num { color: var(--blue); text-shadow: 0 0 20px rgba(0, 210, 255, 0.3); }
+        .stat-card.gold .num { color: var(--gold); text-shadow: 0 0 20px rgba(255, 204, 0, 0.3); }
+        .stat-card.green .num { color: var(--success); text-shadow: 0 0 20px rgba(0, 255, 136, 0.3); }
+
+        /* Tables & Sections */
+        .section-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .section-title h2 { font-size: 1.2rem; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+        .section-title h2 i { color: var(--gold); }
+        .section-title a { color: var(--muted); text-decoration: none; font-size: 0.85rem; font-weight: 600; transition: 0.3s; }
+        .section-title a:hover { color: var(--gold); }
+
+        .glass-panel {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            overflow: hidden;
+            margin-bottom: 50px;
+            backdrop-filter: blur(10px);
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+        th { background: rgba(255, 255, 255, 0.02); color: var(--muted); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; padding: 20px; text-align: left; }
+        td { padding: 20px; border-top: 1px solid var(--border); font-size: 0.9rem; color: #eef; }
+        tr:hover td { background: rgba(255, 255, 255, 0.015); }
+
+        /* Badges */
+        .badge-pill {
+            padding: 6px 14px;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .bp-pending { background: rgba(255, 204, 0, 0.1); color: var(--gold); }
+        .bp-success { background: rgba(0, 255, 136, 0.1); color: var(--success); }
+        .bp-danger { background: rgba(255, 77, 77, 0.1); color: var(--danger); }
+        .bp-info { background: rgba(0, 210, 255, 0.1); color: var(--blue); }
+
+        /* Service Cards */
+        .svc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .svc-card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 30px;
+            text-decoration: none;
+            transition: 0.4s;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .svc-card:hover {
+            background: var(--glass-thick);
+            transform: translateY(-5px);
+            border-color: rgba(255, 204, 0, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .svc-card .icon-wrap {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 204, 0, 0.1);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: var(--gold);
+        }
+
+        .svc-card .info h3 { color: var(--text); font-size: 1.1rem; font-weight: 700; margin-bottom: 5px; }
+        .svc-card .info .price { color: var(--gold); font-weight: 800; font-size: 1.2rem; }
+        .svc-card .info .meta { color: var(--muted); font-size: 0.8rem; display: flex; align-items: center; gap: 10px; margin-top: 5px; }
+
+        .btn-action {
+            background: var(--gold);
+            color: var(--bg);
+            border: none;
+            padding: 8px 18px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: 0.3s;
+            display: inline-block;
+        }
+        .btn-action:hover {
+            background: #fff;
+            transform: scale(1.05);
+            color: var(--bg);
+        }
+
+        .empty-state { text-align: center; padding: 60px; color: var(--muted); }
+
+        @media (max-width: 768px) {
+            .stat-grid { grid-template-columns: 1fr; }
+            .topbar nav { display: none; }
+            .main { padding-top: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="topbar">
+        <a href="/" class="brand"><i class="fas fa-car-side"></i> OTO DriveCare</a>
+        <nav>
+            <a href="/dashboard/" class="active">Dashboard</a>
+            <a href="/services/">Services</a>
+            <a href="/book-service/">Book Service</a>
+            <a href="/booking-history/">My Bookings</a>
+        </nav>
+        <div class="d-flex align-items-center gap-3">
+            <span class="user-chip">👤 {{ request.user.username }}</span>
+            <a href="/logout/" style="color:var(--danger); font-size:0.9rem; text-decoration:none;"><i class="fas fa-sign-out-alt"></i></a>
+        </div>
+    </div>
+
+    <div class="main">
+        {% if messages %}
+            {% for msg in messages %}
+                <div class="alert bg-dark text-{% if msg.tags == 'error' %}danger{% else %}success{% endif %} border-0 p-3 mb-4 rounded-4" 
+                     style="background: var(--glass) !important; border: 1px solid rgba(255,255,255,0.1) !important;">
+                    <i class="fas {% if msg.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} me-2"></i>
+                    {{ msg }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="welcome-header">
+            <h1>Welcome back, <span>{{ request.user.username }}</span>! 👋</h1>
+            <p>Your vehicles are in good hands. Monitor your active services here.</p>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="stat-grid">
+            <div class="stat-card blue">
+                <div class="num">{{ total_bookings }}</div>
+                <div class="lbl">Total Bookings</div>
+            </div>
+            <div class="stat-card gold">
+                <div class="num">{{ pending }}</div>
+                <div class="lbl">Pending Action</div>
+            </div>
+            <div class="stat-card green">
+                <div class="num">{{ completed }}</div>
+                <div class="lbl">Service Completed</div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="section-title">
+            <h2><i class="fas fa-clock"></i> Recent Activity</h2>
+            <a href="/booking-history/">All Bookings <i class="fas fa-arrow-right ms-1"></i></a>
+        </div>
+        
+        <div class="glass-panel">
+            {% if recent_bookings %}
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Service & Car</th>
+                                <th>Workshop Branch</th>
+                                <th>Schedule</th>
+                                <th>Status</th>
+                                <th>Payment</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for b in recent_bookings %}
+                            <tr>
+                                <td>
+                                    <strong>{{ b.service.name }}</strong><br>
+                                    <small class="text-muted">{{ b.car_model }} ({{ b.car_number }})</small>
+                                </td>
+                                <td>{{ b.workshop.name }}</td>
+                                <td>
+                                    <i class="far fa-calendar-alt me-1"></i> {{ b.appointment_date|date:"D, d M" }}<br>
+                                    <small class="text-muted"><i class="far fa-clock me-1"></i> {{ b.appointment_time|time:"h:i A" }}</small>
+                                </td>
+                                <td>
+                                    {% if b.status == 'Pending' %}<span class="badge-pill bp-pending">Pending</span>
+                                    {% elif b.status == 'Approved' %}<span class="badge-pill bp-info">Approved</span>
+                                    {% elif b.status == 'In Progress' %}<span class="badge-pill bp-info">In Progress</span>
+                                    {% elif b.status == 'Completed' %}<span class="badge-pill bp-success">Completed</span>
+                                    {% elif b.status == 'Rejected' %}<span class="badge-pill bp-danger">Rejected</span>
+                                    {% else %}<span class="badge-pill bp-info">Cancelled</span>{% endif %}
+                                </td>
+                                <td>
+                                    {% if b.payment_status == 'Paid' %}
+                                        <span class="badge-pill bp-success"><i class="fas fa-check"></i> Paid</span>
+                                    {% else %}
+                                        <span class="badge-pill bp-danger"><i class="fas fa-clock"></i> Unpaid</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if b.payment_status != 'Paid' and b.status != 'Cancelled' and b.status != 'Rejected' %}
+                                        <a href="/payment/{{ b.id }}/" class="btn-action">Pay ₹{{ b.service.price }}</a>
+                                    {% else %}
+                                        <span class="text-muted small">Done</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-folder-open mb-3 fa-2x opacity-25"></i>
+                    <p>No active bookings yet. <a href="/book-service/" class="text-warning">Book a service →</a></p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Recommended Services -->
+        <div class="section-title">
+            <h2><i class="fas fa-star"></i> Recommended for You</h2>
+            <a href="/services/">Explore All</a>
+        </div>
+        
+        <div class="svc-grid">
+            {% for s in featured_services %}
+            <a href="/book-service/?service_id={{ s.id }}" class="svc-card">
+                <div class="icon-wrap">{{ s.icon }}</div>
+                <div class="info">
+                    <h3>{{ s.name }}</h3>
+                    <div class="price">₹{{ s.price }}</div>
+                    <div class="meta">
+                        <span><i class="far fa-clock"></i> {{ s.duration }}</span>
+                        <span>⭐ Top Pick</span>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Font Awesome -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</body>
+</html>
+%}
+    </div>
+</body>
+
+</html>

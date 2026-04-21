@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment History — OTO DriveCare Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root{--bg:#060d1a;--sidebar:#0b1829;--card:rgba(255,255,255,0.05);--gold:#ffcc00;--gold-dim:rgba(255,204,0,0.1);--text:#f0f4f8;--muted:#6a80a0;--border:rgba(255,255,255,0.08);--sw:230px;}
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{background:var(--bg);color:var(--text);font-family:'Segoe UI',sans-serif;display:flex;min-height:100vh;}
+        .sidebar{width:var(--sw);background:var(--sidebar);border-right:1px solid var(--border);padding:28px 18px;position:fixed;height:100vh;overflow-y:auto;}
+        .sidebar .logo{color:var(--gold);font-size:1.1rem;font-weight:800;margin-bottom:32px;}
+        .sidebar nav a{display:flex;align-items:center;gap:10px;color:#9ab;text-decoration:none;padding:10px 13px;border-radius:9px;margin-bottom:4px;font-size:0.87rem;transition:0.2s;}
+        .sidebar nav a:hover,.sidebar nav a.active{background:var(--gold-dim);color:var(--gold);}
+        .sidebar nav .divider{border-top:1px solid var(--border);margin:14px 0;}
+        .main{margin-left:var(--sw);flex:1;padding:28px 30px 60px;}
+        .toprow{display:flex;justify-content:space-between;align-items:center;margin-bottom:26px;}
+        .toprow h1{font-size:1.4rem;font-weight:800;} .toprow h1 span{color:var(--gold);}
+        
+        .revenue-card { background: linear-gradient(135deg, rgba(255,204,0,0.15), rgba(81,207,102,0.1)); border: 1px solid rgba(255,204,0,0.3); border-radius: 16px; padding: 24px; margin-bottom: 28px; display: flex; align-items: center; gap: 20px; }
+        .rev-icon { font-size: 2.2rem; color: var(--gold); }
+        .rev-data { display: flex; flex-direction: column; }
+        .rev-label { font-size: 0.82rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+        .rev-val { font-size: 2rem; font-weight: 800; color: var(--gold); }
+
+        .panel{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+        table{width:100%;border-collapse:collapse;font-size:0.84rem;}
+        th{background:rgba(255,204,0,0.08);color:var(--gold);font-weight:600;padding:12px 14px;text-align:left;}
+        td{padding:12px 14px;border-top:1px solid var(--border);color:#ccc;vertical-align:middle;}
+        tr:hover td{background:rgba(255,255,255,0.02);}
+        .empty{text-align:center;padding:50px;color:var(--muted);}
+        .customer-info span { color: var(--gold); font-weight: 600; }
+        .utr-id { font-family: 'Courier New', monospace; background: rgba(0,0,0,0.3); padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; color: var(--muted); }
+    </style>
+</head>
+<body>
+<div class="sidebar">
+    <div class="logo">🚗 OTO DriveCare</div>
+    <nav>
+        <a href="/admin-dashboard/">📊 Dashboard</a>
+        <a href="/admin-bookings/">📋 Bookings</a>
+        <a href="/admin-payments/" class="active">💳 Payments</a>
+        <a href="/admin-services/">⚙️ Services</a>
+        <a href="/admin-workshops/">📍 Workshops</a>
+        <a href="/admin-users/">👥 Users</a>
+        <div class="divider"></div>
+        <a href="/admin/">🗄️ Django Admin</a>
+        <a href="/">🏠 Home Site</a>
+        <a href="/logout/" style="color:#ff6b6b;">🚪 Logout</a>
+    </nav>
+</div>
+
+<div class="main">
+    <div class="toprow">
+        <h1>💳 Transaction <span>History</span></h1>
+    </div>
+
+    <!-- Revenue Overview -->
+    <div class="revenue-card">
+        <div class="rev-icon"><i class="fas fa-money-bill-wave"></i></div>
+        <div class="rev-data">
+            <span class="rev-label">Total Revenue Collected</span>
+            <span class="rev-val">₹{{ total_revenue }}</span>
+        </div>
+    </div>
+
+    <div class="panel">
+        {% if payments %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Ref #</th>
+                    <th>Customer</th>
+                    <th>Service Paid</th>
+                    <th>Workshop</th>
+                    <th>Stripe Payment ID</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                    <th>Status / Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for p in payments %}
+            <tr>
+                <td style="color:var(--muted)">PAY-{{ p.id }}</td>
+                <td class="customer-info">
+                    <span>{{ p.user.username }}</span><br>
+                    <small style="color:var(--muted)">ID: {{ p.user.id }}</small>
+                </td>
+                <td>{{ p.booking.service.icon }} {{ p.booking.service.name }}</td>
+                <td>{{ p.booking.workshop.name }}</td>
+                <td><span class="utr-id">{{ p.transaction_id }}</span><br><small style="color:var(--muted)">Method: {{ p.payment_method }}</small></td>
+                <td style="font-weight: 700; color: #51cf66;">₹{{ p.amount }}</td>
+                <td style="color: var(--muted)">{{ p.payment_date|date:"d M Y, h:i A" }}</td>
+                <td>
+                    <div class="badge {% if p.payment_status == 'Approved' %}bg-success{% elif p.payment_status == 'Rejected' %}bg-danger{% else %}bg-warning{% endif %}" style="display:block; padding: 6px 12px; font-size: 0.75rem;">
+                        {% if p.payment_status == 'Approved' %}Payment Done{% else %}{{ p.payment_status }}{% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty">
+            <i class="fas fa-receipt" style="font-size: 2rem; display: block; margin-bottom: 10px; opacity: 0.3;"></i>
+            No transactions found.
+        </div>
+        {% endif %}
+    </div>
+</div>
+</body>
+</html>
