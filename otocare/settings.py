@@ -5,13 +5,13 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/stable/howto/deployment/checklist/
-
 SECRET_KEY = 'django-insecure-your-secret-key-here'
 
+# Set DEBUG to False in production
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+# Update this to include your Render URL
+ALLOWED_HOSTS = ['otocare.onrender.com', 'localhost', '127.0.0.1', '*']
 
 # Application definition
 INSTALLED_APPS = [
@@ -28,6 +28,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Required for static files on Render
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -41,17 +42,14 @@ ROOT_URLCONF = 'otocare.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],  # your project-level templates folder
-        'APP_DIRS': True,  # allows Django to look inside each app's templates/
+        'DIRS': [BASE_DIR / 'templates'],
+        'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
-                # Required for admin
                 'django.template.context_processors.debug',
-                'django.template.context_processors.request',  # W411 warning
-                'django.contrib.auth.context_processors.auth',  # E402 error
-                'django.contrib.messages.context_processors.messages',  # E404 error
-
-                # Optional (good to have)
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.media',
                 'django.template.context_processors.static',
                 'django.template.context_processors.tz',
@@ -60,11 +58,9 @@ TEMPLATES = [
     },
 ]
 
-
 WSGI_APPLICATION = 'otocare.wsgi.application'
 
 # Database
-# https://docs.djangoproject.com/en/stable/ref/settings/#databases
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -81,9 +77,19 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = 'static/'
 
+# THE FIX: This folder is where Django will collect all static files for Render
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# If you have a 'static' folder in your root directory, keep this:
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
+
+# This ensures WhiteNoise handles compression and caching for you
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
- # Stripe Configuration
+# Stripe Configuration
 STRIPE_PUBLISHABLE_KEY = 'pk_test_placeholder'
 STRIPE_SECRET_KEY = 'sk_test_placeholder'
