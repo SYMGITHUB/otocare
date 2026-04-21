@@ -1,2 +1,4 @@
 Django>=4.0
 stripe
+whitenoise>=6.0.0
+gunicorn
